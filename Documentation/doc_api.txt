@@ -1,0 +1,101 @@
+Creation d'un projet WebService symfony
+
+ajout des dépendances
+
+composer require symfony/orm-pack
+composer require --dev symfony/maker-bundle
+composer require doctrine/annotations
+composer require --dev doctrine/doctrine-fixtures-bundle
+composer require fzaninotto/faker
+apache
+
+telechargement de postman pour pouvoir test les api
+
+
+création entity Customer avec propriétées : 
+
+nom
+nom de famille
+email (unique)
+telephone
+
+création d'une méthode toArray() dans le class Customer 
+
+
+public function toArray(){
+
+        return [ 
+            'id' => $this->getId(),
+            'firstName' => $this->getfirstName(),
+            'lastName' => $this->getlastName(),
+            'email' => $this->getemail(),
+            'phoneNumber' => $this->getphoneNumber(),
+        ];
+    }
+
+creation bdd pour migration 
+
+ajout dépendance 
+
+composer require --dev orm-fixtures
+
+mise en place de la methode load dans la fixture a partir de la class Customer
+
+creation de 50 fake user via 
+
+$ php bin/console doctrine:fixtures:load
+
+creation d'un controller customer
+
+php bin/console make:controller
+
+ajout methode dans le controller customer
+
+  #[Route('/customers', name: 'get_all_customer')]
+    public function getAllCustomers(): JsonResponse
+    {
+        $customers = $this->customerRepository->findAll();
+        $data[] = [];
+        foreach ($customers as $customer) {
+            $data = [
+                'id' => $customer->getId(),
+                'firstName' => $customer->getfirstName(),
+                'lastName' => $customer->getlastName(),
+                'email' => $customer->getemail(),
+                'phoneNumber' => $customer->getphoneNumber(),
+            ];
+        }
+        return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+
+
+ajout use Customer Repository dans la class Customer
+
+ajout dans le customer controller du use necessaire et de la méthode suivante
+
+ private $customerRepository;
+    public function __construct(CustomerRepository $customerRepository)
+    {
+        $this->customerRepository = $customerRepository;
+    }
+}
+
+
+création de public function getCustomer($id) dans le controller customer pour récupérer
+seuelement un customer via id au besoin
+
+
+creation d'une méthode public function addCustomers dans le controller customer pour créer
+de nouveaux customers
+
+création d'une méthode public function saveCustomer pour sauvegarder les customer a traver
+le CustomerRepository
+
+creation d'un customer via "POSTMAN" au format JSON 
+{
+    "firstName":"remi",
+    "lastName" : "lopez",
+    "email" : "www.remi13006@hotmail.fr",
+    "phoneNumber" : "0606060606"
+}
