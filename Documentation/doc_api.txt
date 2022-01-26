@@ -114,3 +114,49 @@ creation d'un customer via "POSTMAN" au format JSON
     "email" : "remi13006@hotmail.fr",
     "phoneNumber" : "066666666"
 }
+
+
+
+ajout méthote public function delete dans le controller customer 
+
+
+ajout méthode public function removeCustomer(Customer $customer): Customer // dans le CustomerRepository
+{
+    $this->manager->remove($customer);
+    $this->manager->flush();
+    return $customer;
+}
+
+
+création d'une requete ajax pour test sur lapi  (a mettre dans un dossier dans le ht docs)
+
+<button id="ajaxButton" type="button">Faire une requête</button>
+<p id="test"></p>
+<script>
+(function() {
+  var httpRequest;
+  document.getElementById("ajaxButton").addEventListener('click', makeRequest);
+
+  function makeRequest() {
+    httpRequest = new XMLHttpRequest();
+
+    if (!httpRequest) {
+      alert('Abandon :( Impossible de créer une instance de XMLHTTP');
+      return false;
+    }
+    httpRequest.onreadystatechange = alertContents;
+    httpRequest.open('GET', 'http://localhost/WebService/public/customers');
+    httpRequest.send();
+  }
+
+  function alertContents() {
+    if (httpRequest.readyState === XMLHttpRequest.DONE) {
+      if (httpRequest.status === 200) {
+       document.getElementById("test").innerText = (httpRequest.responseText);
+      } else {
+        alert('Il y a eu un problème avec la requête.');
+      }
+    }
+  }
+})();
+</script>
