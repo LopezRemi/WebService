@@ -35,6 +35,13 @@ class CustomerRepository extends ServiceEntityRepository
         $this->manager->flush();
     }
 
+
+    public function updateCustomer(Customer $customer): Customer
+    {
+        $this->manager->persist($customer);
+        $this->manager->flush();
+        return $customer;
+    }
     // /**
     //  * @return Customer[] Returns an array of Customer objects
     //  */

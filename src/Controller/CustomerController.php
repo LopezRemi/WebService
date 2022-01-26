@@ -21,27 +21,27 @@ class CustomerController extends AbstractController
         $this->customerRepository = $customerRepository;
     }
 
-    #[Route('/customer/{id}', name: 'get_customer', methods:["GET"])]
+    #[Route('/customer/{id}', name: 'get_customer', methods: ["GET"])]
     public function getCustomer(int $id): JsonResponse
     {
         $customer = $this->customerRepository->findOneBy(["id" => $id]);
-            $data = [
-                "id" => $customer->getId(),
-                "firstName" => $customer->getFirstName(),
-                "lastName" => $customer->getLastName(),
-                "email" => $customer->getEmail(),
-                "phoneNumber" => $customer->getPhoneNumber()
-            ];
-        return new JsonResponse($data,Response::HTTP_OK);
+        $data = [
+            "id" => $customer->getId(),
+            "firstName" => $customer->getFirstName(),
+            "lastName" => $customer->getLastName(),
+            "email" => $customer->getEmail(),
+            "phoneNumber" => $customer->getPhoneNumber()
+        ];
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
-    #[Route('/customers', name: 'get_all_customer', methods:["GET"])]
+    #[Route('/customers', name: 'get_all_customer', methods: ["GET"])]
     public function getAllCustomers(): JsonResponse
     {
         //$customers = $event->getRepository(Customer::class)->findAll();
         $customers = $this->customerRepository->findAll();
         $data = [];
-        foreach($customers as $customer){
+        foreach ($customers as $customer) {
             $data[] = [
                 "id" => $customer->getId(),
                 "firstName" => $customer->getFirstName(),
@@ -50,23 +50,37 @@ class CustomerController extends AbstractController
                 "phoneNumber" => $customer->getPhoneNumber()
             ];
         }
-        return new JsonResponse($data,Response::HTTP_OK);
+        return new JsonResponse($data, Response::HTTP_OK);
     }
-    #[Route('/customer/add', name: 'customer_add', methods:["POST"])]
+    #[Route('/customer/add', name: 'customer_add', methods: ["POST"])]
     public function addCustomers(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(),true);
+        $data = json_decode($request->getContent(), true);
 
         $firstName = $data["firstName"];
         $lastName = $data["lastName"];
         $email = $data["email"];
         $phoneNumber = $data["phoneNumber"];
 
-        if (empty($firstName) || empty($lastName) || empty($email) || empty($phoneNumber) ){
+        if (empty($firstName) || empty($lastName) || empty($email) || empty($phoneNumber)) {
             throw new NotFoundHttpException("Expecting mandatory parameters");
         }
-        $this->customerRepository->saveCustomer($firstName,$lastName,$email,$phoneNumber);
-        return new JsonResponse(["status" => "Customer Created!"],Response::HTTP_CREATED);
+        $this->customerRepository->saveCustomer($firstName, $lastName, $email, $phoneNumber);
+        return new JsonResponse(["status" => "Customer Created!"], Response::HTTP_CREATED);
     }
 
+
+    #[Route('/customer/edit/{id}', name: 'update_customer', methods: ["PUT"])]
+    public function update($id, Request $request): JsonResponse
+    {
+        $customer = $this->customerRepository->findOneBy(['id' => $id]);
+        $data = json_decode($request->getContent(), true);
+        empty($data['firstName']) ? true : $customer->setFirstName($data['firstName']);
+        empty($data['lastName']) ? true : $customer->setLastName($data['lastName']);
+        empty($data['email']) ? true : $customer->setEmail($data['email']);
+        empty($data['phoneNumber']) ? true : $customer->setPhoneNumber($data['phoneNumber']);
+        $updatedCustomer = $this->customerRepository->updateCustomer($customer);
+
+        return new JsonResponse($updatedCustomer->toArray(), Response::HTTP_OK);
+    }
 }

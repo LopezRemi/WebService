@@ -99,3 +99,18 @@ creation d'un customer via "POSTMAN" au format JSON
     "email" : "www.remi13006@hotmail.fr",
     "phoneNumber" : "0606060606"
 }
+
+ creatio nde la méthode public function update afin de mettre a jour les customers
+  dans le controller customer.
+
+  creation de la méthode public function updateCustomer dans le CustomerRepository 
+  pour save les update
+
+  mise a jour du customer 51 via "POSTMAN" et la methode "PUT"
+
+  {
+    "firstName":"Rémi",
+    "lastName" : "Lopez",
+    "email" : "remi13006@hotmail.fr",
+    "phoneNumber" : "066666666"
+}
